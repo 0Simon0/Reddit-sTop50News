@@ -12,9 +12,6 @@ enum APIError : Error {
 	case unknown 
 	case httpRequestFailed
 	case emptyDataInResponse
-	case parsingFailed
-	case jsonObjectIsNotDictionary
-	case failedToParseFromJsonObject
 }
 
 enum APIResult<T> {

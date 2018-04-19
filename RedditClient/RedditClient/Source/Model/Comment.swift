@@ -12,9 +12,13 @@ struct Comment: Thing {
 
 	let id: String
 	let name: String
-	static let kind = "t1"
 
 	var author: String?
 	var date: Date?
 	var text: String?
+
+	init(id: String, name: String) {
+		self.id = id
+		self.name = name
+	}
 }

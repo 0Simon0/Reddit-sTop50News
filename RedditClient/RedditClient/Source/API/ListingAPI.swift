@@ -11,11 +11,11 @@ import Foundation
 class ListingAPI {
 
 	@discardableResult
-	static func topList(_ session: URLSession?, page: ThingList.Page, limit: Int? = nil, completion: ((APIResult<ThingList?>) -> Void)?) -> URLSessionDataTask? {
+	static func topList(_ session: URLSession?, limit: Int = 25, count: Int, after: String?, before: String?, completion: ((APIResult<ThingList?>) -> Void)?) -> URLSessionDataTask? {
 
 		let session = session ?? URLSession.shared
 
-		let request = RequestFactory.requestForTopListing()
+		let request = RequestFactory.requestForTopListing(count: count, limit: limit, after: after, before: before)
 		let listingTask = session.dataTask(with: request) { (data, response, error) in
 			let result = handleFinishedListingTask(data: data, response: response, error: error)
 			completion?(result)
@@ -35,25 +35,22 @@ class ListingAPI {
 		}
 
 		guard 200..<300 ~= statusCode else {
+			DebugLogger.log("Request failed.")
 			return APIResult(error: error ?? APIError.httpRequestFailed)
 		}
 
 		guard let data = data, data.count > 0 else {
+			DebugLogger.log("There is no data in response.")
 			return APIResult(error: error ?? APIError.emptyDataInResponse)
 		}
 
-		guard let listingJson = try? JSONSerialization.jsonObject(with: data, options: []) else {
-			return APIResult(error: APIError.parsingFailed)
+		do {
+			let list = try ThingList(from: data)
+			return APIResult(value: list)
+		} catch let error {
+			DebugLogger.log("Failed to parse listing.")
+			return APIResult(error: error)
 		}
 
-		guard let json = listingJson as? [String : Any] else {
-			return APIResult(error: APIError.jsonObjectIsNotDictionary)
-		}
-
-		guard let list = ThingList(from: json) else {
-			return APIResult(error: APIError.failedToParseFromJsonObject)
-		}
-
-		return APIResult(value: list)
 	}
 }

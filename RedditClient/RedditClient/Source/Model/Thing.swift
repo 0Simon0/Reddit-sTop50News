@@ -12,6 +12,5 @@ protocol Thing {
 
 	var id: String {get}
 	var name: String {get}
-	static var kind: String {get}
 
 }

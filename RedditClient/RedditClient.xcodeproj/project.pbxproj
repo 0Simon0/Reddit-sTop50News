@@ -15,6 +15,11 @@
 		32D7D7072087693400A59BB6 /* ThingList+Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7062087693400A59BB6 /* ThingList+Parsing.swift */; };
 		32D7D70920876E3100A59BB6 /* RequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D70820876E3100A59BB6 /* RequestFactory.swift */; };
 		32D7D70B208778C600A59BB6 /* CommonAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D70A208778C600A59BB6 /* CommonAPI.swift */; };
+		32D7D7102088785C00A59BB6 /* Link+Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D70F2088785C00A59BB6 /* Link+Parsing.swift */; };
+		32D7D7122088824800A59BB6 /* ThingParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7112088824800A59BB6 /* ThingParser.swift */; };
+		32D7D7162088935800A59BB6 /* JSONParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7152088935800A59BB6 /* JSONParsing.swift */; };
+		32D7D7182088A73900A59BB6 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7172088A73900A59BB6 /* Log.swift */; };
+		32D7D71A2088B0A000A59BB6 /* ThumbnailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7192088B0A000A59BB6 /* ThumbnailInfo.swift */; };
 		32E7DCED2084C37E003ED72F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E7DCEC2084C37E003ED72F /* AppDelegate.swift */; };
 		32E7DCF22084C37E003ED72F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32E7DCF02084C37E003ED72F /* Main.storyboard */; };
 		32E7DCF42084C37E003ED72F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32E7DCF32084C37E003ED72F /* Assets.xcassets */; };
@@ -31,6 +36,11 @@
 		32D7D7062087693400A59BB6 /* ThingList+Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThingList+Parsing.swift"; sourceTree = "<group>"; };
 		32D7D70820876E3100A59BB6 /* RequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestFactory.swift; sourceTree = "<group>"; };
 		32D7D70A208778C600A59BB6 /* CommonAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonAPI.swift; sourceTree = "<group>"; };
+		32D7D70F2088785C00A59BB6 /* Link+Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Link+Parsing.swift"; sourceTree = "<group>"; };
+		32D7D7112088824800A59BB6 /* ThingParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingParser.swift; sourceTree = "<group>"; };
+		32D7D7152088935800A59BB6 /* JSONParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONParsing.swift; sourceTree = "<group>"; };
+		32D7D7172088A73900A59BB6 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		32D7D7192088B0A000A59BB6 /* ThumbnailInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailInfo.swift; sourceTree = "<group>"; };
 		32E7DCE92084C37E003ED72F /* RedditClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RedditClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32E7DCEC2084C37E003ED72F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32E7DCF12084C37E003ED72F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -65,6 +75,9 @@
 			isa = PBXGroup;
 			children = (
 				32D7D7062087693400A59BB6 /* ThingList+Parsing.swift */,
+				32D7D70F2088785C00A59BB6 /* Link+Parsing.swift */,
+				32D7D7112088824800A59BB6 /* ThingParser.swift */,
+				32D7D7152088935800A59BB6 /* JSONParsing.swift */,
 			);
 			path = Parsing;
 			sourceTree = "<group>";
@@ -72,6 +85,7 @@
 		32D7D70C20879BFC00A59BB6 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				32D7D7172088A73900A59BB6 /* Log.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -139,6 +153,7 @@
 				32D7D702208751C700A59BB6 /* Comment.swift */,
 				32D7D6FC20865AEA00A59BB6 /* Thing.swift */,
 				32D7D70020874D5300A59BB6 /* ThingList.swift */,
+				32D7D7192088B0A000A59BB6 /* ThumbnailInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -240,14 +255,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32D7D7102088785C00A59BB6 /* Link+Parsing.swift in Sources */,
 				32D7D70920876E3100A59BB6 /* RequestFactory.swift in Sources */,
 				32D7D6FD20865AEB00A59BB6 /* Thing.swift in Sources */,
 				32D7D703208751C700A59BB6 /* Comment.swift in Sources */,
 				32D7D6FB20862B7200A59BB6 /* Link.swift in Sources */,
 				32D7D70120874D5300A59BB6 /* ThingList.swift in Sources */,
 				32E7DCED2084C37E003ED72F /* AppDelegate.swift in Sources */,
+				32D7D7122088824800A59BB6 /* ThingParser.swift in Sources */,
+				32D7D7182088A73900A59BB6 /* Log.swift in Sources */,
+				32D7D7162088935800A59BB6 /* JSONParsing.swift in Sources */,
 				32EB812D2086218500061358 /* NewsTableViewController.swift in Sources */,
 				32D7D7052087588500A59BB6 /* ListingAPI.swift in Sources */,
+				32D7D71A2088B0A000A59BB6 /* ThumbnailInfo.swift in Sources */,
 				32D7D7072087693400A59BB6 /* ThingList+Parsing.swift in Sources */,
 				32D7D70B208778C600A59BB6 /* CommonAPI.swift in Sources */,
 			);

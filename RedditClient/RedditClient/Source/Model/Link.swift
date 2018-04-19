@@ -12,12 +12,16 @@ struct Link: Thing {
 
 	let id: String
 	let name: String
-	static let kind = "t3"
 
 	var url: URL?
 	var title: String?
 	var author: String?
 	var date: Date?
-	var thumbnail: URL?
+	var thumbnailInfo: ThumbnailInfo?
 	var numberOfComments: Int?
+
+	init(id: String, name: String) {
+		self.id = id
+		self.name = name
+	}
 }
