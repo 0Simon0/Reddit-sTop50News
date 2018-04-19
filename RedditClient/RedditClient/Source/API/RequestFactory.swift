@@ -10,8 +10,9 @@ import Foundation
 
 class RequestFactory {
 
-	static func requestForTopListing(count: Int = 0, limit: Int = 25, after: String? = nil, before: String? = nil) -> URLRequest {
+	static func requestForTopListing(count: Int, limit: Int, after: String? = nil, before: String? = nil) -> URLRequest {
 		var params = [URLQueryItem]()
+		params.append(URLQueryItem(name: "t", value: "all"))
 		params.append(URLQueryItem(name: "count", value: String(count)))
 		params.append(URLQueryItem(name: "limit", value: String(limit)))
 		if let after = after {
@@ -21,10 +22,9 @@ class RequestFactory {
 			params.append(URLQueryItem(name: "before", value: before))
 		}
 
-		let topListingURL = buildURL(base: baseAPIPath, path: "top", queryItems: params)
+		let topListingURL = buildURL(base: baseAPIPath, path: "/top", queryItems: params)
 		var request = URLRequest(url: topListingURL)
 		request.httpMethod = "GET"
-
 		return request
 	}
 

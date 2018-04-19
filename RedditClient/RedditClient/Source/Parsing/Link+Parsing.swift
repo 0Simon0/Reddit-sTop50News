@@ -9,12 +9,14 @@
 import Foundation
 
 extension Link: JSONConstructable {
+	
 	init(from json: JSONAny) throws {
 		guard let json = json as? JSONDictionary else {
 			throw JSONParsingError.invalidRootObject
 		}
-		guard let kind = json["kind"] as? ThingParser.KnownThingKind, kind == .link else {
-			throw JSONParsingError.missedRequiredField("kind")
+		let kind = try ThingParser.parseThingKind(in: json)
+		guard kind == .link else {
+			throw JSONParsingError.unknownValue(value: kind.rawValue, key: "kind")
 		}
 		guard let data = json["data"] as? JSONDictionary else {
 			throw JSONParsingError.missedRequiredField("data")

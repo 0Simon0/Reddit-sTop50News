@@ -19,15 +19,22 @@ class ThingParser {
 		case link = "t3"
 	}
 
+	static func parseThingKind(in json: JSONDictionary) throws -> KnownThingKind {
+		guard let kindString = json["kind"] as? String else
+		{
+			throw JSONParsingError.missedRequiredField("kind")
+		}
+		guard let kind = KnownThingKind.init(rawValue: kindString) else {
+			throw ThingParserError.unknownThingKind
+		}
+		return kind
+	}
+
 	static func parse(from json: JSONAny) throws -> Thing {
 		guard let json = json as? JSONDictionary else {
 			throw JSONParsingError.invalidRootObject
 		}
-		guard let kind = json["kind"] as? KnownThingKind else
-		{
-			throw JSONParsingError.missedRequiredField("kind")
-		}
-
+		let kind = try parseThingKind(in: json)
 		switch kind {
 		case .link:
 			return try Link(from: json)

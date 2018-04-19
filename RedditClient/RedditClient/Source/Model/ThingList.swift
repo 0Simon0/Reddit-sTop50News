@@ -11,21 +11,55 @@ import Foundation
 final class ThingList {
 
 	struct Page {
-		let before: String?
-		let after: String?
+		private(set) var before: String?
+		private(set) var after: String?
+		private(set) var count: Int
 
-		var isEmpty: Bool {
-			let isAfterEmpty = (after != nil ? after!.isEmpty : true)
-			let isBeforeEmpty = (before != nil ? before!.isEmpty : true)
-			return isAfterEmpty && isBeforeEmpty
+		var hasNext: Bool {
+			return (after != nil ? !after!.isEmpty : false)
 		}
 
-		init(after: String? = nil, before: String? = nil) {
+		var hasPrevious: Bool {
+			return (before != nil ? !before!.isEmpty : false)
+		}
+
+		var isEmpty: Bool {
+			return !hasNext && !hasPrevious
+		}
+
+		init(count: Int = 0, after: String? = nil, before: String? = nil) {
+			assert(count >= 0, "Wrong value of count for page!")
 			self.after = after
 			self.before = before
+			self.count = (count >= 0 ? count : 0)
+		}
+
+		func add(_ page: Page) -> Page {
+			return Page(count: count + page.count, after: page.after, before: page.before)
 		}
 	}
 
-	var list = [Thing]()
-	var page = Page()
+	private(set) var things: [Thing]
+	private(set) var page: Page?
+
+	init() {
+		self.things = [Thing]()
+	}
+	
+	init(things: [Thing], page: Page) {
+		self.things = things
+		self.page = page
+	}
+
+	func appendTningList(_ list: ThingList) {
+		guard let appendingPage = list.page else {
+			return
+		}
+		self.things.append(contentsOf: list.things)
+		guard let page = page else {
+			self.page = appendingPage
+			return
+		}
+		self.page = page.add(appendingPage)
+	}
 }

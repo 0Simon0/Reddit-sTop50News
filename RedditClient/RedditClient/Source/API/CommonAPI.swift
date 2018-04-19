@@ -16,7 +16,7 @@ enum APIError : Error {
 
 enum APIResult<T> {
 	case success(T)
-	case failure(Error?)
+	case failure(Error)
 
 	init(value: T) {
 		self = .success(value)

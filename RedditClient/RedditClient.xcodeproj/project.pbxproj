@@ -20,6 +20,7 @@
 		32D7D7162088935800A59BB6 /* JSONParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7152088935800A59BB6 /* JSONParsing.swift */; };
 		32D7D7182088A73900A59BB6 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7172088A73900A59BB6 /* Log.swift */; };
 		32D7D71A2088B0A000A59BB6 /* ThumbnailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D7192088B0A000A59BB6 /* ThumbnailInfo.swift */; };
+		32D7D71D2088B81D00A59BB6 /* TopNewsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D71C2088B81D00A59BB6 /* TopNewsProvider.swift */; };
 		32E7DCED2084C37E003ED72F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E7DCEC2084C37E003ED72F /* AppDelegate.swift */; };
 		32E7DCF22084C37E003ED72F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32E7DCF02084C37E003ED72F /* Main.storyboard */; };
 		32E7DCF42084C37E003ED72F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32E7DCF32084C37E003ED72F /* Assets.xcassets */; };
@@ -41,6 +42,7 @@
 		32D7D7152088935800A59BB6 /* JSONParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONParsing.swift; sourceTree = "<group>"; };
 		32D7D7172088A73900A59BB6 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		32D7D7192088B0A000A59BB6 /* ThumbnailInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailInfo.swift; sourceTree = "<group>"; };
+		32D7D71C2088B81D00A59BB6 /* TopNewsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNewsProvider.swift; sourceTree = "<group>"; };
 		32E7DCE92084C37E003ED72F /* RedditClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RedditClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32E7DCEC2084C37E003ED72F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32E7DCF12084C37E003ED72F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -90,6 +92,14 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		32D7D71B2088B78400A59BB6 /* NewsProviders */ = {
+			isa = PBXGroup;
+			children = (
+				32D7D71C2088B81D00A59BB6 /* TopNewsProvider.swift */,
+			);
+			path = NewsProviders;
+			sourceTree = "<group>";
+		};
 		32E7DCE02084C37E003ED72F = {
 			isa = PBXGroup;
 			children = (
@@ -118,6 +128,7 @@
 		32EB81222086036A00061358 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				32D7D71B2088B78400A59BB6 /* NewsProviders */,
 				32D7D70C20879BFC00A59BB6 /* Utilities */,
 				32D7D6FE20865D6F00A59BB6 /* API */,
 				32EB8125208603A300061358 /* Application */,
@@ -257,6 +268,7 @@
 			files = (
 				32D7D7102088785C00A59BB6 /* Link+Parsing.swift in Sources */,
 				32D7D70920876E3100A59BB6 /* RequestFactory.swift in Sources */,
+				32D7D71D2088B81D00A59BB6 /* TopNewsProvider.swift in Sources */,
 				32D7D6FD20865AEB00A59BB6 /* Thing.swift in Sources */,
 				32D7D703208751C700A59BB6 /* Comment.swift in Sources */,
 				32D7D6FB20862B7200A59BB6 /* Link.swift in Sources */,

@@ -11,12 +11,13 @@ import Foundation
 class ListingAPI {
 
 	@discardableResult
-	static func topList(_ session: URLSession?, limit: Int = 25, count: Int, after: String?, before: String?, completion: ((APIResult<ThingList?>) -> Void)?) -> URLSessionDataTask? {
+	static func fetchTopList(_ session: URLSession?, fromPage: ThingList.Page, limit: Int = 20, completion: ((APIResult<ThingList>) -> Void)?) -> URLSessionDataTask? {
 
 		let session = session ?? URLSession.shared
 
-		let request = RequestFactory.requestForTopListing(count: count, limit: limit, after: after, before: before)
+		let request = RequestFactory.requestForTopListing(count: fromPage.count, limit: limit, after: fromPage.after, before: nil)
 		let listingTask = session.dataTask(with: request) { (data, response, error) in
+			DebugLogger.log("Finished request with url: \((request.url?.debugDescription ?? "nil"))")
 			let result = handleFinishedListingTask(data: data, response: response, error: error)
 			completion?(result)
 		}
@@ -25,7 +26,7 @@ class ListingAPI {
 		return listingTask
 	}
 
-	private static func handleFinishedListingTask(data: Data?, response: URLResponse?, error: Error?) -> APIResult<ThingList?> {
+	private static func handleFinishedListingTask(data: Data?, response: URLResponse?, error: Error?) -> APIResult<ThingList> {
 
 		let statusCode: Int
 		if let httpResponse = response as? HTTPURLResponse {
