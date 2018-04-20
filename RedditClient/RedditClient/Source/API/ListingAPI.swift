@@ -15,6 +15,12 @@ class ListingAPI {
 
 		let session = session ?? URLSession.shared
 
+		assert(limit > 0, "Shouldn't call fetch with limit less then 1.")
+		guard limit > 0 else {
+			completion?(APIResult(error: APIError.badRequest))
+			return nil
+		}
+
 		let request = RequestFactory.requestForTopListing(count: fromPage.count, limit: limit, after: fromPage.after, before: nil)
 		let listingTask = session.dataTask(with: request) { (data, response, error) in
 			DebugLogger.log("Finished request with url: \((request.url?.debugDescription ?? "nil"))")

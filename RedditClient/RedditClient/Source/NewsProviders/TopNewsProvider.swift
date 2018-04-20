@@ -8,7 +8,7 @@
 
 import Foundation
 
-class TopNewsProvider {
+class TopNewsProvider<NewsItem> {
 
 	struct Configuration {
 		var maxNewsCount: Int? = nil
@@ -30,12 +30,16 @@ class TopNewsProvider {
 	private let session = URLSession.shared
 
 	let configuration: Configuration
-	var news: [Thing] {
+	var news: [NewsItem] {
+		let newsInfos =  list.things.compactMap({ (thing) -> NewsItem? in
+			return thing as? NewsItem
+		})
+
 		guard let maxCount = configuration.maxNewsCount, maxCount < list.things.count else {
-			return list.things
+			return newsInfos
 		}
 		assert(false, "List can't be bigger then maxCount.")
-		let news = Array(list.things[..<maxCount])
+		let news = Array(newsInfos[..<maxCount])
 		return news
 	}
 
@@ -43,11 +47,11 @@ class TopNewsProvider {
 		self.configuration = configuration
 	}
 
-	var newsLimitReached: Bool {
+	private var newsLimitReached: Bool {
 		guard let maxCount = configuration.maxNewsCount else {
 			return false
 		}
-		return list.things.count >= maxCount
+		return news.count >= maxCount
 	}
 
 	var hasMoreToLoad: Bool {
@@ -55,14 +59,14 @@ class TopNewsProvider {
 			return false
 		}
 		guard let page = list.page else {
-			return true
+			return false
 		}
 		return page.hasNext
 	}
 
 	func reloadNews(completion: @escaping (() -> Void)) {
 		let emptyPage = ThingList.Page()
-		let limit = TopNewsProvider.prefferedLimit(with: configuration, for: list)
+		let limit = TopNewsProvider.prefferedLimit(with: configuration, forNewsCount: 0)
 		ListingAPI.fetchTopList(session, fromPage: emptyPage, limit: limit) { (result) in
 			switch result {
 			case .success(let newList):
@@ -78,7 +82,7 @@ class TopNewsProvider {
 
 	func loadMoreNews(completion: @escaping (() -> Void)) {
 		let page = list.page ?? ThingList.Page()
-		let limit = TopNewsProvider.prefferedLimit(with: configuration, for: list)
+		let limit = TopNewsProvider.prefferedLimit(with: configuration, forNewsCount: news.count)
 
 		ListingAPI.fetchTopList(session, fromPage: page, limit: limit) { (result) in
 			switch result {
@@ -93,13 +97,16 @@ class TopNewsProvider {
 		}
 	}
 
-	private static func prefferedLimit(with configuration: Configuration, for list: ThingList) -> Int {
+	private static func prefferedLimit(with configuration: Configuration, forNewsCount currentNewsCount: Int) -> Int {
 		let prefferedPageSize = configuration.prefferedPageSize
 		guard let maxCount = configuration.maxNewsCount else {
 			return prefferedPageSize
 		}
-		let difference = maxCount - list.things.count
+		let difference = maxCount - currentNewsCount
 		assert(difference > 0, "Difference should be greater then 0.")
+		guard difference > 0 else {
+			return 0
+		}
 		return difference >= prefferedPageSize ? prefferedPageSize : difference
 	}
 	

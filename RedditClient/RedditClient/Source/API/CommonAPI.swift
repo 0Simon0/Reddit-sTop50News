@@ -9,7 +9,8 @@
 import Foundation
 
 enum APIError : Error {
-	case unknown 
+	case unknown
+	case badRequest
 	case httpRequestFailed
 	case emptyDataInResponse
 }
