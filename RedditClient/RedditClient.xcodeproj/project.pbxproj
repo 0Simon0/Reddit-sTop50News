@@ -14,6 +14,8 @@
 		32CB5B61208D079D00B19B18 /* URL+PathExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CB5B60208D079D00B19B18 /* URL+PathExtension.swift */; };
 		32CB5B63208D0F9400B19B18 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CB5B62208D0F9400B19B18 /* ImageLoader.swift */; };
 		32CB5B65208DCA2000B19B18 /* Date+StringRepresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CB5B64208DCA2000B19B18 /* Date+StringRepresentation.swift */; };
+		32CB5B67208DFD9D00B19B18 /* BrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CB5B66208DFD9D00B19B18 /* BrowserViewController.swift */; };
+		32CB5B69208E064300B19B18 /* URL+HttpsSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CB5B68208E064300B19B18 /* URL+HttpsSchema.swift */; };
 		32D7D6FB20862B7200A59BB6 /* Link.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D6FA20862B7200A59BB6 /* Link.swift */; };
 		32D7D6FD20865AEB00A59BB6 /* Thing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D6FC20865AEA00A59BB6 /* Thing.swift */; };
 		32D7D70120874D5300A59BB6 /* ThingList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D7D70020874D5300A59BB6 /* ThingList.swift */; };
@@ -43,6 +45,8 @@
 		32CB5B60208D079D00B19B18 /* URL+PathExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+PathExtension.swift"; sourceTree = "<group>"; };
 		32CB5B62208D0F9400B19B18 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		32CB5B64208DCA2000B19B18 /* Date+StringRepresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+StringRepresentation.swift"; sourceTree = "<group>"; };
+		32CB5B66208DFD9D00B19B18 /* BrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserViewController.swift; sourceTree = "<group>"; };
+		32CB5B68208E064300B19B18 /* URL+HttpsSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+HttpsSchema.swift"; sourceTree = "<group>"; };
 		32D7D6FA20862B7200A59BB6 /* Link.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Link.swift; sourceTree = "<group>"; };
 		32D7D6FC20865AEA00A59BB6 /* Thing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thing.swift; sourceTree = "<group>"; };
 		32D7D70020874D5300A59BB6 /* ThingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingList.swift; sourceTree = "<group>"; };
@@ -121,9 +125,11 @@
 			isa = PBXGroup;
 			children = (
 				32D7D7172088A73900A59BB6 /* Log.swift */,
+				32CB5B64208DCA2000B19B18 /* Date+StringRepresentation.swift */,
+				32CB5B68208E064300B19B18 /* URL+HttpsSchema.swift */,
 				32CB5B60208D079D00B19B18 /* URL+PathExtension.swift */,
 				32CB5B62208D0F9400B19B18 /* ImageLoader.swift */,
-				32CB5B64208DCA2000B19B18 /* Date+StringRepresentation.swift */,
+				32CB5B66208DFD9D00B19B18 /* BrowserViewController.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -312,6 +318,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32CB5B65208DCA2000B19B18 /* Date+StringRepresentation.swift in Sources */,
+				32CB5B67208DFD9D00B19B18 /* BrowserViewController.swift in Sources */,
 				32D7D7102088785C00A59BB6 /* Link+Parsing.swift in Sources */,
 				32D7D70920876E3100A59BB6 /* RequestFactory.swift in Sources */,
 				32D7D71D2088B81D00A59BB6 /* TopNewsProvider.swift in Sources */,
@@ -329,6 +336,7 @@
 				32EB812D2086218500061358 /* NewsTableViewController.swift in Sources */,
 				32CB5B63208D0F9400B19B18 /* ImageLoader.swift in Sources */,
 				32D7D7052087588500A59BB6 /* ListingAPI.swift in Sources */,
+				32CB5B69208E064300B19B18 /* URL+HttpsSchema.swift in Sources */,
 				32D7D71A2088B0A000A59BB6 /* ThumbnailInfo.swift in Sources */,
 				321D929C208939AE00757AFE /* NewsTableViewCell.swift in Sources */,
 				32D7D7072087693400A59BB6 /* ThingList+Parsing.swift in Sources */,

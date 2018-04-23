@@ -14,4 +14,5 @@ protocol NewsInfoConvertable {
 	var author: String? {get}
 	var created: Date? {get}
 	var thumbnailInfo: ThumbnailInfo? {get}
+	var url: URL? {get}
 }

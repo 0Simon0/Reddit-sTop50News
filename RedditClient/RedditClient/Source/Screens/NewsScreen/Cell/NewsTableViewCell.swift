@@ -41,24 +41,34 @@ class NewsTableViewCell: UITableViewCell {
 		didSet {
 			if thumbnailInfo != oldValue {
 				updateThumbnailUI()
-				if let url = thumbnailInfo?.url, url.isImageURL {
+				if let url = thumbnailInfo?.url {
 					updateThubnailImage(from: url)
 				}
 			}
 		}
 	}
+	var thumbnailTapHandler: (() -> Void)?
 
-	var defaultThumbnailImage: UIImage? = UIImage(named: "DefaultThumbnail")
-	var defaultPictureImage: UIImage? = UIImage(named: "DefaultPicture")
-	var thumbnailImage: UIImage? {
+	@IBOutlet private(set) var titleLabel: UILabel!
+	@IBOutlet private(set) var descriptionLabel: UILabel!
+	@IBOutlet private(set) var thumbnailImageView: UIImageView!
+
+	private let defaultThumbnailImage: UIImage? = UIImage(named: "DefaultThumbnail")
+	private var thumbnailImage: UIImage? {
 		didSet {
 			updateThumbnailUI()
 		}
 	}
 
-	@IBOutlet private(set) var titleLabel: UILabel!
-	@IBOutlet private(set) var descriptionLabel: UILabel!
-	@IBOutlet private(set) var thumbnailImageView: UIImageView!
+	override func awakeFromNib() {
+		super.awakeFromNib()
+
+		thumbnailImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(thumbnailDidTap(_:))))
+		thumbnailImageView.isUserInteractionEnabled = true
+
+		updateDescriptionUI()
+		updateThumbnailUI()
+	}
 
 	override func prepareForReuse() {
 		super.prepareForReuse()
@@ -67,6 +77,7 @@ class NewsTableViewCell: UITableViewCell {
 		author = nil
 		created = nil
 		thumbnailInfo = nil
+		thumbnailTapHandler = nil
 	}
 
 	private func updateDescriptionUI() {
@@ -87,11 +98,7 @@ class NewsTableViewCell: UITableViewCell {
 	}
 
 	private func setDefaultThumbnailImage() {
-		guard let thumbnailInfo = thumbnailInfo, thumbnailInfo.url.isImageURL else {
-			thumbnailImageView.image = defaultThumbnailImage
-			return
-		}
-		thumbnailImageView.image = defaultPictureImage
+		thumbnailImageView.image = defaultThumbnailImage
 	}
 
 	private func updateThumbnailUI() {
@@ -121,10 +128,7 @@ class NewsTableViewCell: UITableViewCell {
 		}
 	}
 
-	override func awakeFromNib() {
-		super.awakeFromNib()
-
-		updateDescriptionUI()
-		updateThumbnailUI()
+	@objc func thumbnailDidTap(_ sender: Any?) {
+		thumbnailTapHandler?()
 	}
 }

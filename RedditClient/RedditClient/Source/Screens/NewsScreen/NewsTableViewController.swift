@@ -50,10 +50,7 @@ class NewsTableViewController: UIViewController, UITableViewDelegate, UITableVie
 		tableView.rowHeight = UITableViewAutomaticDimension
 
 		tableView.refreshControl = topRefreshControl
-	}
 
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
 		manuallyReload()
 	}
 
@@ -129,7 +126,12 @@ extension NewsTableViewController {
 		cell.title = newsInfo.title
 		cell.author = newsInfo.author
 		cell.created = newsInfo.created
-		cell.thumbnailInfo = newsInfo.thumbnailInfo
+		if let url = newsInfo.url, url.isImageURL {
+			cell.thumbnailInfo = newsInfo.thumbnailInfo
+			cell.thumbnailTapHandler = { [weak self] in
+				self?.showFullsizedPicture(url)
+			}
+		}
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -146,7 +148,9 @@ extension NewsTableViewController {
 extension NewsTableViewController {
 
 	func showFullsizedPicture(_ pictureUrl: URL) {
-
+		let browserViewController = BrowserViewController()
+		browserViewController.loadURL(pictureUrl)
+		navigationController?.pushViewController(browserViewController, animated: true)
 	}
 }
 
