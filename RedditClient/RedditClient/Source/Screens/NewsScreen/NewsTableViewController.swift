@@ -8,7 +8,14 @@
 
 import UIKit
 
-class NewsTableViewController: UITableViewController {
+class NewsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+	@IBOutlet var tableView: UITableView!
+
+	lazy var topRefreshControl: UIRefreshControl =  {
+		let refreshControl = UIRefreshControl()
+		refreshControl.addTarget(self, action: #selector(reloadNews), for: .valueChanged)
+		return refreshControl
+	}()
 
 	static func instantiate(newsProvider: TopNewsProvider<NewsInfoConvertable>) -> NewsTableViewController {
 		let newsScreen = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NewsTableViewController") as! NewsTableViewController
@@ -18,13 +25,15 @@ class NewsTableViewController: UITableViewController {
 
 	var provider: TopNewsProvider<NewsInfoConvertable>? = nil {
 		didSet {
-			updateUI()
+			updateCachedNews()
 		}
 	}
 
-	private var news: [NewsInfoConvertable] {
-		get {
-			return provider?.news ?? []
+	private var cachedNews: [NewsInfoConvertable] = [NewsInfoConvertable]() {
+		didSet {
+			if isViewLoaded {
+				updateUI()
+			}
 		}
 	}
 
@@ -34,15 +43,18 @@ class NewsTableViewController: UITableViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		tableView.dataSource = self
 		tableView.delegate = self
+		tableView.dataSource = self
 
-		tableView.estimatedRowHeight = 72
+		tableView.estimatedRowHeight = 100
 		tableView.rowHeight = UITableViewAutomaticDimension
 
-		refreshControl = UIRefreshControl()
-		refreshControl?.addTarget(self, action: #selector(reloadNews), for: .valueChanged)
-		reloadNews()
+		tableView.refreshControl = topRefreshControl
+	}
+
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		manuallyReload()
 	}
 
 	override func didReceiveMemoryWarning() {
@@ -50,29 +62,44 @@ class NewsTableViewController: UITableViewController {
 		// Dispose of any resources that can be recreated.
 	}
 
-	private func updateUI() {
-		updateStateOfBottomRefresh()
-		tableView.reloadData()
-	}
-
 	@objc private func reloadNews() {
-		refreshControl?.beginRefreshing()
 		provider?.reloadNews {[weak self] in
 			DispatchQueue.main.async {
-				self?.refreshControl?.endRefreshing()
-				self?.updateUI()
+				self?.updateCachedNews()
+				self?.tableView.refreshControl?.endRefreshing()
 			}
 		}
 	}
 
-	private func loadMoreNews() {
+	@objc private func loadMoreNews() {
 		isLoadingMoreNews = true
 		provider?.loadMoreNews {[weak self] in
 			DispatchQueue.main.async {
-				self?.updateUI()
+				self?.updateCachedNews()
 				self?.isLoadingMoreNews = false
 			}
 		}
+	}
+
+	private func updateCachedNews() {
+		cachedNews = provider?.news ?? [NewsInfoConvertable]()
+	}
+
+	private func manuallyReload() {
+		guard !topRefreshControl.isRefreshing else {
+			return
+		}
+		let contentOffset = CGPoint(x: tableView.contentOffset.x, y: -topRefreshControl.bounds.size.height)
+
+		topRefreshControl.beginRefreshing()
+		tableView.setContentOffset(contentOffset, animated: true)
+
+		reloadNews()
+	}
+
+	private func updateUI() {
+		updateStateOfBottomRefresh()
+		tableView.reloadData()
 	}
 
 	private func updateStateOfBottomRefresh() {
@@ -85,12 +112,11 @@ class NewsTableViewController: UITableViewController {
 		}
 	}
 
-	override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		let preloadingCoefficient: CGFloat = 0.7
 		let offsetY = scrollView.contentOffset.y
-		let contentHeight = scrollView.contentSize.height
-
-		// fix
-		if offsetY > contentHeight - scrollView.frame.height * 4 {
+		let maxOffsetY = scrollView.contentSize.height - scrollView.frame.height
+		if offsetY >= maxOffsetY * preloadingCoefficient {
 			bottomPullToReload()
 		}
 	}
@@ -103,13 +129,13 @@ extension NewsTableViewController {
 		cell.title = newsInfo.title
 	}
 
-	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return news.count
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return cachedNews.count
 	}
 
-	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "NewsCell", for: indexPath) as! NewsTableViewCell
-		configureCell(cell, wiht: news[indexPath.row])
+		configureCell(cell, wiht: cachedNews[indexPath.row])
 		return cell
 	}
 }
