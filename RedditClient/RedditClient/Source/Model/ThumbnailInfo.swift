@@ -8,8 +8,12 @@
 
 import Foundation
 
-struct ThumbnailInfo {
+struct ThumbnailInfo: Equatable {
 	let url: URL
 	let width: Int
 	let height: Int
+
+	static func == (lhs: ThumbnailInfo, rhs: ThumbnailInfo) -> Bool {
+		return lhs.url == rhs.url && lhs.width == rhs.width && lhs.height == rhs.height
+	}
 }

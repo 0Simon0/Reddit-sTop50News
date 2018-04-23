@@ -12,4 +12,6 @@ protocol NewsInfoConvertable {
 	var id: String {get}
 	var title: String? {get}
 	var author: String? {get}
+	var created: Date? {get}
+	var thumbnailInfo: ThumbnailInfo? {get}
 }

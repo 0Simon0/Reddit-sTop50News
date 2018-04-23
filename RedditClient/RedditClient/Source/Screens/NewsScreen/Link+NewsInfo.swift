@@ -9,5 +9,7 @@
 import Foundation
 
 extension Link: NewsInfoConvertable {
-	
+	var created: Date? {
+		return date
+	}
 }

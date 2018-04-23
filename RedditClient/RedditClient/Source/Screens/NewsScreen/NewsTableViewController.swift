@@ -127,6 +127,9 @@ extension NewsTableViewController {
 	private func configureCell(_ cell: NewsTableViewCell, wiht newsInfo: NewsInfoConvertable) {
 		cell.id = newsInfo.id
 		cell.title = newsInfo.title
+		cell.author = newsInfo.author
+		cell.created = newsInfo.created
+		cell.thumbnailInfo = newsInfo.thumbnailInfo
 	}
 
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

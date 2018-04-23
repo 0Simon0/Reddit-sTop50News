@@ -67,10 +67,10 @@ class TopNewsProvider<NewsItem> {
 	func reloadNews(completion: @escaping (() -> Void)) {
 		let emptyPage = ThingList.Page()
 		let limit = TopNewsProvider.prefferedLimit(with: configuration, forNewsCount: 0)
-		ListingAPI.fetchTopList(session, fromPage: emptyPage, limit: limit) { (result) in
+		ListingAPI.fetchTopList(session, fromPage: emptyPage, limit: limit) {[weak self] (result) in
 			switch result {
 			case .success(let newList):
-				self.list = newList
+				self?.list = newList
 				break
 			case .failure(let error):
 				DebugLogger.log("Can't reaload page. Error occur: \(error)")
@@ -83,11 +83,11 @@ class TopNewsProvider<NewsItem> {
 	func loadMoreNews(completion: @escaping (() -> Void)) {
 		let page = list.page ?? ThingList.Page()
 		let limit = TopNewsProvider.prefferedLimit(with: configuration, forNewsCount: news.count)
-
+		weak var currentList = list
 		ListingAPI.fetchTopList(session, fromPage: page, limit: limit) { (result) in
 			switch result {
 			case .success(let nextList):
-				self.list.appendTningList(nextList)
+				currentList?.appendTningList(nextList)
 				break
 			case .failure(let error):
 				DebugLogger.log("Can't load next page. Error occur: \(error)")
