@@ -8,43 +8,56 @@
 
 import UIKit
 
-enum ImageLoaderError : Error {
-	case canNotCreateImageFromData
-	case emptyDataFromServer
-}
+class ImageLoader {
 
-enum ImageLoaderResult {
-	case success(UIImage)
-	case failure(Error)
-
-	init(image: UIImage) {
-		self = .success(image)
+	enum ImageLoaderError : Error {
+		case canNotCreateImageFromData
+		case emptyDataFromServer
 	}
 
-	init(error: Error?) {
-		if let error = error {
-			self = .failure(error)
-		} else {
-			self = .failure(APIError.unknown)
+	enum ImageLoaderResult {
+		case success(UIImage)
+		case failure(Error)
+
+		init(image: UIImage) {
+			self = .success(image)
+		}
+
+		init(error: Error?) {
+			if let error = error {
+				self = .failure(error)
+			} else {
+				self = .failure(APIError.unknown)
+			}
 		}
 	}
-}
-
-class ImageLoader {
 
 	static let shared = ImageLoader()
 
-	private var cache = NSCache<NSURL, UIImage>()
-	private var session = URLSession(configuration: URLSessionConfiguration.default)
+	private let cache = NSCache<NSURL, UIImage>()
+	private let session = URLSession(configuration: URLSessionConfiguration.default)
 
-	func imageForUrl(url: URL, completionHandler:@escaping (_ result: ImageLoaderResult) -> ()) {
+	deinit {
+		session.invalidateAndCancel()
+	}
+
+	func imageForUrl(_ url: URL, completionHandler:@escaping (_ result: ImageLoaderResult) -> ()) {
+		let completionInMainThread = { (_ result: ImageLoaderResult) in
+			if Thread.isMainThread {
+				completionHandler(result)
+			} else {
+				DispatchQueue.main.async {
+					completionHandler(result)
+				}
+			}
+		}
 		guard let image = cachedImage(forKey: url) else {
 			downloadImage(url: url, completionHandler: { (result) in
-				completionHandler(result)
+				completionInMainThread(result)
 			})
 			return
 		}
-		completionHandler(ImageLoaderResult(image: image))
+		completionInMainThread(ImageLoaderResult(image: image))
 	}
 
 	private func downloadImage(url: URL, completionHandler:@escaping (_ result: ImageLoaderResult) -> ()) {

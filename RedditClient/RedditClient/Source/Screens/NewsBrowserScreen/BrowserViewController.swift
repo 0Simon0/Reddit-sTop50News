@@ -15,9 +15,16 @@ class BrowserViewController: UIViewController {
 	private(set) var url: URL?
 	private(set) var isLoading: Bool = false {
 		didSet {
-			navigationItem.rightBarButtonItem = isLoading ? loadingIndicator : nil
+			updateRightBarButtonItem()
+
 		}
 	}
+	private(set) var canSaveToPhoto: Bool = false {
+		didSet {
+			updateRightBarButtonItem()
+		}
+	}
+	private lazy var imageLoader = ImageLoader()
 
 	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
 		super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -49,16 +56,34 @@ class BrowserViewController: UIViewController {
 		view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[subview]-0-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["subview" : webView]))
 	}
 
-	private lazy var loadingIndicator: UIBarButtonItem = {
+	private lazy var loadingIndicatorBarButtonItem: UIBarButtonItem = {
 		let loadingIndicatorItem = UIActivityIndicatorView(activityIndicatorStyle: .gray)
 		loadingIndicatorItem.startAnimating()
 		return UIBarButtonItem(customView: loadingIndicatorItem)
 	}()
+	private lazy var saveBarButtonItem: UIBarButtonItem = {
+		return UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveToPhotos))
+	}()
+
+	private func updateRightBarButtonItem() {
+		guard !isLoading else {
+			navigationItem.rightBarButtonItem = loadingIndicatorBarButtonItem
+			return
+		}
+		navigationItem.rightBarButtonItem = canSaveToPhoto ? saveBarButtonItem : nil
+	}
 
 	func loadURL(_ url: URL) {
 		let httpsSchemaUrl = url.httpsSchemaURL
 		self.url = httpsSchemaUrl
 		webView.load(URLRequest(url: httpsSchemaUrl))
+	}
+
+	@objc private func saveToPhotos(_ sender: UIBarButtonItem) {
+		guard let url = url else {
+			return
+		}
+		downloadImageAndSaveToPhotos(url)
 	}
 }
 
@@ -75,10 +100,12 @@ extension BrowserViewController : WKNavigationDelegate {
 
 	func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
 		isLoading = true
+		canSaveToPhoto = false
 	}
 
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		isLoading = false
+		canSaveToPhoto = url?.isImageURL ?? false
 
 		if let title = webView.title , !title.isEmpty {
 			self.title = title
@@ -87,26 +114,49 @@ extension BrowserViewController : WKNavigationDelegate {
 
 	func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
 		isLoading = false
-		presentError(error)
+		presentAlert(title: "Error", message: "Can not open url \(url?.absoluteString ?? "")", detailsMessage: error.localizedDescription)
 	}
 
 	func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
 		isLoading = false
-		presentError(error)
+		presentAlert(title: "Error", message: "Can not open url \(url?.absoluteString ?? "")", detailsMessage: error.localizedDescription)
 	}
+}
 
-	private func presentError(_ error: Error) {
-		let alertController = UIAlertController(title: "Error", message: "Can not open url \(url?.absoluteString ?? "")", preferredStyle: .alert)
+extension BrowserViewController {
 
-		let detailAction = UIAlertAction(title: "Details", style: .default, handler: { [weak self] (action) in
-			let errorDetailsAlertController = UIAlertController(title: "Error details", message: error.localizedDescription, preferredStyle: .alert)
-			errorDetailsAlertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-			self?.present(errorDetailsAlertController, animated: true, completion: nil)
-			})
-		alertController.addAction(detailAction)
-		alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
+	fileprivate func downloadImageAndSaveToPhotos(_ url: URL) {
+		assert(url.isImageURL, "Url doesn't refer to image.")
+		guard url.isImageURL else {
+			return
+		}
+		if PhotoLibraryAssistant.isAuthorizedAccess() {
+			let hud = ActivityHUD()
+			hud.message = "Downloading..."
+			hud.show(in: self.view, animated: true)
+			imageLoader.imageForUrl(url) { (result) in
+				switch result {
+				case .success(let image):
+					hud.message = "Saving..."
+					PhotoLibraryAssistant.addImageToPhotos(image, completion: { (success, error) in
+						if let error = error {
+							DebugLogger.log("While saving to Photos error occurs. \(error.localizedDescription)")
+						}
+						hud.message = success ? "Success" : "Failed"
+						hud.hide(afterDelay: 0.3, animated: true)
+					})
+					break
 
-		present(alertController, animated: true, completion: nil)
+				case .failure(let error):
+					DebugLogger.log("While saving to Photos error occurs. \(error.localizedDescription)")
+					hud.message = "Failed"
+					hud.hide(afterDelay: 0.3, animated: true)
+					break
+				}
+			}
+		} else {
+			PhotoLibraryAssistant.showAuthorizationRequiredAlert(uiPresenter: self)
+		}
 	}
 }
 

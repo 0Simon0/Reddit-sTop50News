@@ -40,10 +40,10 @@ class NewsTableViewCell: UITableViewCell {
 		}
 		didSet {
 			if thumbnailInfo != oldValue {
-				updateThumbnailUI()
 				if let url = thumbnailInfo?.url {
 					updateThubnailImage(from: url)
 				}
+				updateThumbnailUI()
 			}
 		}
 	}
@@ -111,7 +111,7 @@ class NewsTableViewCell: UITableViewCell {
 
 	private func updateThubnailImage(from url: URL) {
 		let cellId = id
-		ImageLoader.shared.imageForUrl(url: url) { [weak self] (result) in
+		ImageLoader.shared.imageForUrl(url) { [weak self] (result) in
 			guard self?.id == cellId else {
 				return
 			}
@@ -122,7 +122,7 @@ class NewsTableViewCell: UITableViewCell {
 				}
 				break
 			case .failure(let error):
-				DebugLogger.log("Can't load thumbnail. Error occurs: \(error)")
+				DebugLogger.log("Can't load thumbnail by url: \(url). Error occurs: \(error)")
 				break
 			}
 		}
