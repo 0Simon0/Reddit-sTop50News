@@ -32,6 +32,13 @@ class NewsTableViewCell: UITableViewCell {
 			}
 		}
 	}
+	var numberOfComments: Int? {
+		didSet {
+			if numberOfComments != oldValue {
+				updateCommentsUI()
+			}
+		}
+	}
 	var thumbnailInfo: ThumbnailInfo? {
 		willSet {
 			if thumbnailInfo != newValue {
@@ -51,6 +58,7 @@ class NewsTableViewCell: UITableViewCell {
 
 	@IBOutlet private(set) var titleLabel: UILabel!
 	@IBOutlet private(set) var descriptionLabel: UILabel!
+	@IBOutlet private(set) var commentsLabel: UILabel!
 	@IBOutlet private(set) var thumbnailImageView: UIImageView!
 
 	private let defaultThumbnailImage: UIImage? = UIImage(named: "DefaultThumbnail")
@@ -68,6 +76,7 @@ class NewsTableViewCell: UITableViewCell {
 
 		updateDescriptionUI()
 		updateThumbnailUI()
+		updateCommentsUI()
 	}
 
 	override func prepareForReuse() {
@@ -95,6 +104,14 @@ class NewsTableViewCell: UITableViewCell {
 		}
 		let description = "submitted \(timeDescription) by \(authorDescription)"
 		descriptionLabel.text = description
+	}
+
+	private func updateCommentsUI() {
+		guard let numberOfComments = numberOfComments, numberOfComments > 0 else {
+			commentsLabel.text = "no comments yet"
+			return
+		}
+		commentsLabel.text = "\(numberOfComments) \(numberOfComments == 1 ? "comment" : "comments")"
 	}
 
 	private func setDefaultThumbnailImage() {

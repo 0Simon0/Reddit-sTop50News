@@ -15,4 +15,5 @@ protocol NewsInfoConvertable {
 	var created: Date? {get}
 	var thumbnailInfo: ThumbnailInfo? {get}
 	var url: URL? {get}
+	var numberOfComments: Int? {get}
 }

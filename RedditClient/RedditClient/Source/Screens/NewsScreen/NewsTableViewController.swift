@@ -141,6 +141,7 @@ extension NewsTableViewController {
 		cell.title = newsInfo.title
 		cell.author = newsInfo.author
 		cell.created = newsInfo.created
+		cell.numberOfComments = newsInfo.numberOfComments
 		if let url = newsInfo.url, url.isImageURL {
 			cell.thumbnailInfo = newsInfo.thumbnailInfo
 			cell.thumbnailTapHandler = { [weak self] in

@@ -61,7 +61,13 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="adz-JV-6t4" userLabel="Description Label">
-                                                                    <rect key="frame" x="0.0" y="8" width="50" height="19"/>
+                                                                    <rect key="frame" x="0.0" y="8" width="50" height="0.0"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BMg-jT-RPr" userLabel="Comments Label">
+                                                                    <rect key="frame" x="0.0" y="16" width="50" height="11"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
@@ -89,6 +95,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="commentsLabel" destination="BMg-jT-RPr" id="JzG-lt-uH0"/>
                                             <outlet property="descriptionLabel" destination="adz-JV-6t4" id="47m-S6-47f"/>
                                             <outlet property="thumbnailImageView" destination="wuw-9A-9d7" id="l5g-pH-jab"/>
                                             <outlet property="titleLabel" destination="05P-b8-fS7" id="8hW-iH-PZw"/>
