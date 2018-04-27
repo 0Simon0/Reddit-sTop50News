@@ -8,9 +8,9 @@
 
 import Foundation
 
-final class ThingList {
+final class ThingList: Codable {
 
-	struct Page {
+	struct Page: Codable {
 		private(set) var before: String?
 		private(set) var after: String?
 		private(set) var count: Int
@@ -61,5 +61,61 @@ final class ThingList {
 			return
 		}
 		self.page = page.add(appendingPage)
+	}
+
+	enum CodingKeys: String, CodingKey {
+		case things
+		case page
+	}
+
+	enum ThingCodingKey: CodingKey {
+		case thing
+		case type
+	}
+
+	enum ThingType: String, Codable {
+		case link = "link"
+	}
+
+	init(from decoder: Decoder) throws {
+		var things = [Thing]()
+		do {
+			let values = try decoder.container(keyedBy: CodingKeys.self)
+			let page = try values.decode(Page.self, forKey: .page)
+
+			var thingsArray = try values.nestedUnkeyedContainer(forKey: CodingKeys.things)
+			while(!thingsArray.isAtEnd) {
+				let thing = try thingsArray.nestedContainer(keyedBy: ThingCodingKey.self)
+				let type = try thing.decode(ThingType.self, forKey: ThingCodingKey.type)
+				switch type {
+				case .link:
+					things.append(try thing.decode(Link.self, forKey: ThingCodingKey.thing))
+				}
+			}
+			self.page = page
+			self.things = things
+		} catch {
+			DebugLogger.log("While encoding ThingList: \(error)")
+			self.page = nil
+			self.things = things
+		}
+	}
+
+	func encode(to encoder: Encoder) throws {
+		do {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(page, forKey: CodingKeys.page)
+		var thingsContainer = container.nestedUnkeyedContainer(forKey: CodingKeys.things)
+
+		try self.things.forEach { (thing) in
+			var thingContainer = thingsContainer.nestedContainer(keyedBy: ThingCodingKey.self)
+			if let link = thing as? Link {
+				try thingContainer.encode(ThingType.link, forKey: ThingCodingKey.type)
+				try thingContainer.encode(link, forKey: ThingCodingKey.thing)
+			}
+		}
+		} catch (let error) {
+			DebugLogger.log("While encoding ThingList: \(error)")
+		}
 	}
 }

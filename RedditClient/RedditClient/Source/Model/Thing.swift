@@ -8,9 +8,8 @@
 
 import Foundation
 
-protocol Thing {
+protocol Thing : Codable {
 
 	var id: String {get}
 	var name: String {get}
-
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ThumbnailInfo: Equatable {
+struct ThumbnailInfo: Equatable, Codable {
 	let url: URL
 	let width: Int
 	let height: Int

@@ -8,9 +8,9 @@
 
 import Foundation
 
-class TopNewsProvider<NewsItem> {
+class TopNewsProvider<NewsItem>: Codable {
 
-	struct Configuration {
+	struct Configuration: Codable {
 		var maxNewsCount: Int? = nil
 		var prefferedPageSize: Int = 20
 
@@ -64,6 +64,10 @@ class TopNewsProvider<NewsItem> {
 		return page.hasNext
 	}
 
+	var atLeastOnceLoaded: Bool {
+		return list.page != nil
+	}
+
 	func reloadNews(completion: @escaping (() -> Void)) {
 		let emptyPage = ThingList.Page()
 		let limit = TopNewsProvider.prefferedLimit(with: configuration, forNewsCount: 0)
@@ -108,6 +112,23 @@ class TopNewsProvider<NewsItem> {
 			return 0
 		}
 		return difference >= prefferedPageSize ? prefferedPageSize : difference
+	}
+
+	enum CodingKeys: String, CodingKey {
+		case configuration
+		case list
+	}
+
+	required init(from decoder: Decoder) throws {
+		let values = try decoder.container(keyedBy: CodingKeys.self)
+		configuration = try values.decode(Configuration.self, forKey: .configuration)
+		list = try values.decode(ThingList.self, forKey: .list)
+	}
+
+	func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(configuration, forKey: .configuration)
+		try container.encode(list, forKey: .list)
 	}
 	
 }

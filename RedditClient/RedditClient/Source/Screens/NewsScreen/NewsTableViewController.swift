@@ -26,6 +26,14 @@ class NewsTableViewController: UIViewController, UITableViewDelegate, UITableVie
 	var provider: TopNewsProvider<NewsInfoConvertable>? = nil {
 		didSet {
 			updateCachedNews()
+			updateTitle()
+
+			guard isViewLoaded else {
+				return
+			}
+			if let provider = provider, !provider.atLeastOnceLoaded {
+				manuallyReload()
+			}
 		}
 	}
 
@@ -51,7 +59,9 @@ class NewsTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
 		tableView.refreshControl = topRefreshControl
 
-		manuallyReload()
+		if let provider = provider, !provider.atLeastOnceLoaded {
+			manuallyReload()
+		}
 	}
 
 	override func didReceiveMemoryWarning() {
@@ -80,6 +90,11 @@ class NewsTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
 	private func updateCachedNews() {
 		cachedNews = provider?.news ?? [NewsInfoConvertable]()
+	}
+
+	private func updateTitle() {
+		let maxNewsCount: Int? = provider?.configuration.maxNewsCount
+		title = "Top \(maxNewsCount != nil ? String(maxNewsCount!) : "")"
 	}
 
 	private func manuallyReload() {
@@ -154,3 +169,54 @@ extension NewsTableViewController {
 	}
 }
 
+extension NewsTableViewController {
+
+	static let providerRestorableKey = "provider"
+
+	override func encodeRestorableState(with coder: NSCoder) {
+		super.encodeRestorableState(with: coder)
+
+		if let provider = provider {
+			let jsonEncoder = JSONEncoder()
+			if let providerData = try? jsonEncoder.encode(provider) {
+				coder.encode(providerData, forKey:NewsTableViewController.providerRestorableKey)
+			}
+		}
+	}
+
+	override func decodeRestorableState(with decoder: NSCoder) {
+		super.decodeRestorableState(with: decoder)
+
+		if let providerData = decoder.decodeObject(forKey: NewsTableViewController.providerRestorableKey) as? Data {
+			let jsonDecoder = JSONDecoder()
+			provider = try? jsonDecoder.decode(TopNewsProvider<NewsInfoConvertable>.self, from: providerData)
+		}
+	}
+
+	override func applicationFinishedRestoringState() {
+		super.applicationFinishedRestoringState()
+		updateStateOfBottomRefresh()
+	}
+}
+
+extension NewsTableViewController: UIDataSourceModelAssociation {
+
+	func modelIdentifierForElement(at idx: IndexPath, in view: UIView) -> String? {
+		guard !idx.isEmpty else {
+			return nil
+		}
+		guard cachedNews.count > idx.row else {
+			return nil
+		}
+		return cachedNews[idx.row].id
+	}
+
+	func indexPathForElement(withModelIdentifier identifier: String, in view: UIView) -> IndexPath? {
+		guard let index = cachedNews.index(where: { (news) -> Bool in
+			return news.id == identifier
+		}) else {
+			return nil
+		}
+		return IndexPath(row: index, section: 0)
+	}
+}

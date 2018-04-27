@@ -42,7 +42,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	func applicationWillTerminate(_ application: UIApplication) {
 		// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 	}
-
-
 }
 
+extension AppDelegate /* Restoration */ {
+
+	func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool {
+		return true
+	}
+
+	func application(_ application: UIApplication, shouldRestoreApplicationState coder: NSCoder ) -> Bool {
+		return true
+	}
+
+	func application(_ application: UIApplication,
+					 viewControllerWithRestorationIdentifierPath identifierComponents: [Any],
+					 coder: NSCoder) -> UIViewController? {
+		return MainRouter.shared.viewController(withRestorationIdentifierPath: identifierComponents, coder: coder)
+	}
+}

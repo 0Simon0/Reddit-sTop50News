@@ -12,11 +12,14 @@ import WebKit
 class BrowserViewController: UIViewController {
 
 	private(set) var webView: WKWebView!
-	private(set) var url: URL?
+	private(set) var url: URL? {
+		didSet {
+			canSaveToPhoto = url?.isImageURL ?? false
+		}
+	}
 	private(set) var isLoading: Bool = false {
 		didSet {
 			updateRightBarButtonItem()
-
 		}
 	}
 	private(set) var canSaveToPhoto: Bool = false {
@@ -47,7 +50,6 @@ class BrowserViewController: UIViewController {
 		} else {
 			webView = WKWebView()
 		}
-
 		webView.navigationDelegate = self
 
 		webView.translatesAutoresizingMaskIntoConstraints = false
@@ -65,6 +67,14 @@ class BrowserViewController: UIViewController {
 		return UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveToPhotos))
 	}()
 
+	override func viewDidLoad() {
+		super.viewDidLoad()
+
+		restorationIdentifier = BrowserViewController.restorationIdentifierString
+		restorationClass = BrowserViewController.self
+		webView.restorationIdentifier = BrowserViewController.webViewRestorationIdentifierString
+	}
+
 	private func updateRightBarButtonItem() {
 		guard !isLoading else {
 			navigationItem.rightBarButtonItem = loadingIndicatorBarButtonItem
@@ -75,8 +85,9 @@ class BrowserViewController: UIViewController {
 
 	func loadURL(_ url: URL) {
 		let httpsSchemaUrl = url.httpsSchemaURL
-		self.url = httpsSchemaUrl
 		webView.load(URLRequest(url: httpsSchemaUrl))
+		self.isLoading = webView.isLoading
+		self.url = httpsSchemaUrl
 	}
 
 	@objc private func saveToPhotos(_ sender: UIBarButtonItem) {
@@ -100,12 +111,10 @@ extension BrowserViewController : WKNavigationDelegate {
 
 	func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
 		isLoading = true
-		canSaveToPhoto = false
 	}
 
 	func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
 		isLoading = false
-		canSaveToPhoto = url?.isImageURL ?? false
 
 		if let title = webView.title , !title.isEmpty {
 			self.title = title
@@ -160,3 +169,37 @@ extension BrowserViewController {
 	}
 }
 
+extension BrowserViewController: UIViewControllerRestoration {
+
+	static let restorationIdentifierString = "BrowserViewController"
+	static let webViewRestorationIdentifierString = "BrowserViewController.WebView"
+
+	static func viewController(withRestorationIdentifierPath identifierComponents: [Any], coder: NSCoder) -> UIViewController? {
+		guard let restorationIdentifier = identifierComponents.last as? String, BrowserViewController.restorationIdentifierString == restorationIdentifier else {
+			return nil
+		}
+		return BrowserViewController()
+	}
+}
+
+extension BrowserViewController {
+
+	static let urlRestorableKey = "url"
+
+	override func encodeRestorableState(with coder: NSCoder) {
+		super.encodeRestorableState(with: coder)
+		coder.encode(url, forKey:BrowserViewController.urlRestorableKey)
+	}
+
+	override func decodeRestorableState(with decoder: NSCoder) {
+		super.decodeRestorableState(with: decoder)
+		url = decoder.decodeObject(forKey: BrowserViewController.urlRestorableKey) as? URL
+	}
+
+	override func applicationFinishedRestoringState() {
+		super.applicationFinishedRestoringState()
+		if let url = url {
+			loadURL(url)
+		}
+	}
+}
