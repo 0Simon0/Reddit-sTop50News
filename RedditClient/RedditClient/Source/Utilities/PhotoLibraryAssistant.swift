@@ -14,13 +14,17 @@ class PhotoLibraryAssistant {
 		case notAuthorizedAccessToPhotos
 	}
 
-	public static func isAuthorizedAccess() -> Bool {
-		switch PHPhotoLibrary.authorizationStatus() {
-		case .authorized, .notDetermined:
+	private static func isAuthorizedAccess(_ status: PHAuthorizationStatus) -> Bool {
+		switch status {
+		case .authorized:
 			return true
-		case .restricted, .denied:
+		case .restricted, .denied, .notDetermined:
 			return false
 		}
+	}
+
+	static func isAuthorizedAccess() -> Bool {
+		return isAuthorizedAccess(PHPhotoLibrary.authorizationStatus())
 	}
 
 	static func addImageToPhotos(_ image: UIImage, completion: ((_ success: Bool, _ error: Error?) -> Void)?) {
@@ -44,15 +48,31 @@ class PhotoLibraryAssistant {
 		}
 	}
 
-	static func showAuthorizationRequiredAlert(uiPresenter: UIViewController) {
+	static func showAuthorizationRequiredAlert(uiPresenter: UIViewController, completion: ((_ isAuthorizedAccess: Bool) -> Void)?) {
 
-		let alertController = UIAlertController(title: "Access to Photos required", message: "Please give access to your Photos. Go to your phone settings and turn on permission.", preferredStyle: .alert)
-		alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
-		alertController.addAction(UIAlertAction(title: "Open Settings", style: .default, handler: { (action) in
-			openSystemSettings()
-		}))
+		switch PHPhotoLibrary.authorizationStatus() {
+		case .authorized:
+			assert(false, "Ask to show authorization required alert when access has already authorized.")
+			completion?(true)
+			break
+		case .notDetermined:
+			PHPhotoLibrary.requestAuthorization { (status) in
+				completion?(isAuthorizedAccess(status))
+			}
+			break
+		default:
+			let alertController = UIAlertController(title: "Access to Photos required", message: "Please give access to your Photos. Go to your phone settings and turn on permission.", preferredStyle: .alert)
+			alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+				completion?(isAuthorizedAccess(PHPhotoLibrary.authorizationStatus()))
+			}))
+			alertController.addAction(UIAlertAction(title: "Open Settings", style: .default, handler: { (action) in
+				openSystemSettings()
+				completion?(isAuthorizedAccess(PHPhotoLibrary.authorizationStatus()))
+			}))
 
-		uiPresenter.present(alertController, animated: true, completion: nil)
+			uiPresenter.present(alertController, animated: true, completion: nil)
+			break
+		}
 	}
 
 	private static func openSystemSettings() {

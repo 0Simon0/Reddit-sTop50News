@@ -139,11 +139,15 @@ extension BrowserViewController {
 		guard url.isImageURL else {
 			return
 		}
-		if PhotoLibraryAssistant.isAuthorizedAccess() {
+
+		let downloadAndSaveToPhotos = { [weak self] in
+			guard let selfStrong = self else {
+				return
+			}
 			let hud = ActivityHUD()
 			hud.message = "Downloading..."
-			hud.show(in: self.view, animated: true)
-			imageLoader.imageForUrl(url) { (result) in
+			hud.show(in: selfStrong.view, animated: true)
+			selfStrong.imageLoader.imageForUrl(url) { (result) in
 				switch result {
 				case .success(let image):
 					hud.message = "Saving..."
@@ -163,8 +167,16 @@ extension BrowserViewController {
 					break
 				}
 			}
+		}
+
+		if PhotoLibraryAssistant.isAuthorizedAccess() {
+			downloadAndSaveToPhotos()
 		} else {
-			PhotoLibraryAssistant.showAuthorizationRequiredAlert(uiPresenter: self)
+			PhotoLibraryAssistant.showAuthorizationRequiredAlert(uiPresenter: self, completion: { [weak self] (isAuthorizedAccess) in
+				if isAuthorizedAccess {
+					downloadAndSaveToPhotos()
+				}
+			})
 		}
 	}
 }
